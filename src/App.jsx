@@ -1,17 +1,54 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react';
-import { Badge, Button, Col, Container, Form, ListGroup, Nav, NavDropdown, Navbar, Row, Stack } from 'react-bootstrap';
+import { Alert, Badge, Button, Card, Col, Container, Form, ListGroup, Nav, NavDropdown, Navbar, Row, Stack } from 'react-bootstrap';
+import { BiDotsVerticalRounded, BiCheck, BiTime, BiHourglass, BiX, BiFileFind, BiArchive } from 'react-icons/bi';
+
 
 const App = () => {
 
+  const estados = {
+    '01': {
+      nombre: 'Pendiente',
+      color: 'warning',
+      icono: <BiArchive />
+    },
+    '02': {
+      nombre: 'En espera',
+      color: 'secondary',
+      icono: <BiTime />
+    },
+    '03': {
+      nombre: 'En progreso',
+      color: 'primary',
+      icono: <BiHourglass />
+    },
+    '04': {
+      nombre: 'Revisión',
+      color: 'info',
+      icono: <BiFileFind />
+    },
+    '05': {
+      nombre: 'Completado',
+      color: 'success',
+      icono: <BiCheck />
+    },
+    '06': {
+      nombre: 'Cancelado',
+      color: 'danger',
+      icono: <BiX />
+    },
+  }
+
   const BASE_API = import.meta.env.VITE_BASE_API;
 
-  const [estados, setEstados] = useState([])
+  const [proyectos, setProyectos] = useState([]);
 
   const obtenerTodo = async () => {
-    const res = await fetch(BASE_API + '/api/estados');
+    const res = await fetch(BASE_API + '/proyectos');
     const data = await res.json();
-    setEstados(data)
+    console.log(data);
+
+    setProyectos(data)
   }
 
   useEffect(() => {
@@ -27,7 +64,6 @@ const App = () => {
           <Navbar.Collapse id="navbarScroll">
             <Nav
               className="me-auto my-2 my-lg-0"
-              style={{ maxHeight: '100px' }}
               navbarScroll
             >
               <Nav.Link href="#action1">Home</Nav.Link>
@@ -60,42 +96,40 @@ const App = () => {
       </Navbar>
       <Container fluid>
         <Row>
-          <Col>
-            <Stack direction="horizontal" gap={2}>
-              <Badge bg="primary">En Progreso</Badge>
-              <Badge bg="success">Completada</Badge>
-              <Badge bg="danger">Cancelada</Badge>
-              <Badge bg="warning">
-                Pendiente
-              </Badge>
-              <Badge bg="light" text="dark">
-                Light
-              </Badge>
-              <Badge bg="dark">Dark</Badge>
-            </Stack>
-          </Col>
-        </Row>
-        <Row>
           <Col lg={6}>
             <Form.Select aria-label="Default select example">
-              {
-                estados.map(estado => {
-                  return <option key={estado.estadoId} value={estado.estadoId}>{estado.nombre}</option>
-                })
-              }
+              <option value='01'>Pendiente</option>
+              <option value='02'>En espera</option>
+              <option value='03'>En progreso</option>
+              <option value='04'>Revisión</option>
+              <option value='05'>Completado</option>
+              <option value='06'>Cancelado</option>
             </Form.Select>
           </Col>
         </Row>
-        <Row>
-          <Col lg={6}>
-            <ListGroup>
-              <ListGroup.Item>Cras justo odio</ListGroup.Item>
-              <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
-              <ListGroup.Item>Morbi leo risus</ListGroup.Item>
-              <ListGroup.Item>Porta ac consectetur ac</ListGroup.Item>
-              <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
-            </ListGroup>
-          </Col>
+        <Row className='mt-2'>
+          {
+            proyectos.map((proyecto) => (
+              <Col key={proyecto.proyectoId} xl={3} lg={4} md={6} sm={12}>
+                <Card style={{ cursor: 'pointer' }}
+                  className='mb-2'
+                  onClick={() => console.log(proyecto.proyectoId)}
+                >
+                  <Card.Body>
+                    <Card.Title>{proyecto.titulo}</Card.Title>
+                    {
+                      proyecto.descripcion && <Card.Subtitle className="mb-2 text-muted">{proyecto.descripcion}</Card.Subtitle>
+                    }
+                    <Card.Text className='text-muted'>
+                      <em>{proyecto.fechaRelativa}</em>
+                    </Card.Text>
+                    <Badge bg={estados[proyecto.estado].color}>{estados[proyecto.estado].nombre} {estados[proyecto.estado].icono}</Badge>
+                  </Card.Body>
+                  <BiDotsVerticalRounded className='position-absolute top-0 end-0' />
+                </Card>
+              </Col>
+            ))
+          }
         </Row>
       </Container>
     </>

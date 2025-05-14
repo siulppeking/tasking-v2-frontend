@@ -1,8 +1,15 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react';
-import { Badge, Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
-import { BiDotsVerticalRounded, BiCheck, BiTime, BiHourglass, BiX, BiFileFind, BiArchive,
-  BiRightArrowAlt } from 'react-icons/bi';
+import { Badge, Card, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
+import {
+  BiDotsVerticalRounded,
+  BiCheck,
+  BiTime,
+  BiHourglass,
+  BiX,
+  BiSearchAlt2,
+  BiError
+} from 'react-icons/bi';
 import Loading from './components/Loading';
 import NavbarPrivate from './components/NavbarPrivate';
 
@@ -13,7 +20,7 @@ const App = () => {
     '01': {
       nombre: 'Pendiente',
       color: 'warning',
-      icono: <BiArchive />
+      icono: <BiError />
     },
     '02': {
       nombre: 'En espera',
@@ -28,7 +35,7 @@ const App = () => {
     '04': {
       nombre: 'Revisión',
       color: 'info',
-      icono: <BiFileFind />
+      icono: <BiSearchAlt2 />
     },
     '05': {
       nombre: 'Completado',
@@ -46,6 +53,8 @@ const App = () => {
 
   const [proyectos, setProyectos] = useState([]);
   const [cargando, setCargando] = useState(false);
+  const [filtro, setFiltro] = useState("");
+
 
   const obtenerTodo = async () => {
 
@@ -59,13 +68,21 @@ const App = () => {
 
   useEffect(() => {
     obtenerTodo();
-  }, [])
+  }, []);
+
+  // Filtro aplicado en tiempo real
+  const proyectosFiltrados = proyectos.filter((proyecto) => {
+    const texto = filtro.toLowerCase();
+    const titulo = proyecto.titulo?.toLowerCase() || "";
+    const descripcion = proyecto.descripcion?.toLowerCase() || "";
+    return titulo.includes(texto) || descripcion.includes(texto);
+  });
 
   return (
     <>
       <NavbarPrivate />
       <Container fluid>
-        <Row>
+        <Row style={{ display: 'none' }}>
           <Col lg={6}>
             <Form.Select aria-label="Default select example">
               <option value='01'>Pendiente</option>
@@ -77,14 +94,27 @@ const App = () => {
             </Form.Select>
           </Col>
         </Row>
+        <Row className='mt-3'>
+          <Col xl={{ span: 4, offset: 4 }} lg={{ span: 4, offset: 4 }} md={{ span: 6, offset: 3 }} sm={12}>
+            <InputGroup className="">
+              <InputGroup.Text id="basic-addon1"><BiSearchAlt2 /></InputGroup.Text>
+              <Form.Control
+                placeholder="Filtro de Busqueda..."
+                aria-label="Username"
+                value={filtro}
+                onChange={(e) => setFiltro(e.target.value)} 
+              />
+            </InputGroup>
+          </Col>
+        </Row>
         {
           cargando && <Loading />
         }
         {
           !cargando &&
-          <Row className='mt-2'>
+          <Row className='mt-3'>
             {
-              proyectos.map((proyecto) => (
+              proyectosFiltrados.map((proyecto) => (
                 <Col key={proyecto.proyectoId} xl={3} lg={4} md={6} sm={12}>
                   <Card style={{ cursor: 'pointer' }}
                     className='shadow-lg mb-2'
@@ -100,7 +130,6 @@ const App = () => {
                       </Card.Text>
                       <Badge bg={estados[proyecto.estado].color}>{estados[proyecto.estado].nombre} {estados[proyecto.estado].icono}</Badge>
                     </Card.Body>
-                    <BiDotsVerticalRounded className='position-absolute top-0 end-0' />
                   </Card>
                 </Col>
               ))

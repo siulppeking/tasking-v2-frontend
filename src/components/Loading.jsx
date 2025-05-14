@@ -10,7 +10,7 @@ const Loading = () => {
             <div className="circles">
                 <div className="circle"></div>
                 <div className="mainLogo">
-                    <img src={svg} alt="" style={{opacity: 0.4, width: '68%', marginTop: '23px', marginLeft: '6px'}} />
+                    <img src={svg} alt="" style={{opacity: 0.37, width: '62%', marginTop: '28px', marginLeft: '6px'}} />
                 </div>
             </div>
         </div>

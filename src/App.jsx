@@ -162,10 +162,18 @@ const App = () => {
         </Row>
         <Row className='mt-3'>
           <Col lg={6} sm={12}>
-            <Bar data={barData} options={options} />
+            <Card className='shadow-lg mb-2'>
+              <Card.Body>
+                <Bar data={barData} options={options} />
+              </Card.Body>
+            </Card>
           </Col>
           <Col lg={6} sm={12}>
-            <Line data={lineData} options={options} />
+            <Card className='shadow-lg mb-2'>
+              <Card.Body>
+                <Line data={lineData} options={options} />
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
         <Row className='mt-3'>
